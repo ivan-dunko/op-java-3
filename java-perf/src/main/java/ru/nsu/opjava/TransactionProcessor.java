@@ -14,7 +14,6 @@ public class TransactionProcessor
 	}
 
 
-
 	public static void main(String[] args) throws Exception{
 		TransactionProcessor tp = new TransactionProcessor();
 		for (int i = 0; i < 10; ++i) {
