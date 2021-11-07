@@ -14,7 +14,7 @@ import javassist.bytecode.*;
 public class TransactionProcessorTransformer implements ClassFileTransformer {
 
     private final String targetClassName;
-
+    private int classesLoaded = 0;
 
     public TransactionProcessorTransformer(String name) {
         this.targetClassName = name;
@@ -29,7 +29,7 @@ public class TransactionProcessorTransformer implements ClassFileTransformer {
             byte[] classfileBuffer){
 
         className = className.replaceAll("/", ".");
-
+        ++classesLoaded;
         if (!className.equals(targetClassName)) {
             return classfileBuffer;
         }
@@ -47,8 +47,9 @@ public class TransactionProcessorTransformer implements ClassFileTransformer {
             m.insertAfter("ru.nsu.opjava.Aggregator.endLog();");
 
             m = cc.getDeclaredMethod("main");
-            m.insertAfter("ru.nsu.opjava.Aggregator.printStats();");
-
+            m.insertAfter("{ru.nsu.opjava.Aggregator.printStats();System.out.println(" +
+                    "\"Classes loaded:\" + " + classesLoaded + ");}");
+            
             byteCode = cc.toBytecode();
             cc.detach();
         } catch (Exception e) {
